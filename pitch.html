@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindFlow Pitch Deck</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .pitch-deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.6s ease-in-out;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide.prev {
+            transform: translateX(-100%);
+        }
+
+        /* Gradient Backgrounds */
+        .bg-indigo-purple { background: linear-gradient(135deg, #4F46E5, #7C3AED); }
+        .bg-red-pink { background: linear-gradient(135deg, #EF4444, #EC4899); }
+        .bg-green-teal { background: linear-gradient(135deg, #10B981, #14B8A6); }
+        .bg-blue-indigo { background: linear-gradient(135deg, #3B82F6, #6366F1); }
+        .bg-purple-indigo { background: linear-gradient(135deg, #8B5CF6, #6366F1); }
+        .bg-emerald-green { background: linear-gradient(135deg, #10B981, #16A34A); }
+        .bg-orange-red { background: linear-gradient(135deg, #F97316, #EF4444); }
+        .bg-violet-purple { background: linear-gradient(135deg, #8B5CF6, #A855F7); }
+
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
+
+        .icon-large {
+            font-size: 6rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            line-height: 1.4;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(2, 1fr); }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: left;
+        }
+
+        .card h3 {
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .bullet-list {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .bullet-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .bullet-point {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            margin-right: 1rem;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-growth {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .pricing-tier {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .pricing-tier.popular {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fbbf24;
+            color: black;
+            padding: 0.25rem 1rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .feature-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-list li::before {
+            content: "•";
+            margin-right: 0.5rem;
+        }
+
+        .milestone {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-blur: blur(10px);
+            margin-bottom: 1.5rem;
+        }
+
+        .milestone-number {
+            width: 4rem;
+            height: 4rem;
+            background: white;
+            color: #4F46E5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .milestone-content {
+            text-align: left;
+        }
+
+        .milestone-phase {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .milestone-target {
+            color: #10b981;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .demo-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .demo-step {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .step-number {
+            width: 2rem;
+            height: 2rem;
+            background: white;
+            color: #4F46E5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .demo-url {
+            font-size: 1.5rem;
+            font-family: monospace;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .contact-box {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Navigation */
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            width: 3rem;
+            height: 3rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-indicators {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .indicator {
+            width: 0.75rem;
+            height: 0.75rem;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .keyboard-hint {
+            position: fixed;
+            bottom: 1rem;
+            right: 2rem;
+            font-size: 0.875rem;
+            opacity: 0.6;
+            z-index: 1000;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 2rem 1rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .milestone {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pitch-deck">
+        <!-- Slide 1: Title -->
+        <div class="slide active bg-indigo-purple" data-slide="0">
+            <div class="slide-content">
+                <div class="icon-large">🧠</div>
+                <h1>MindFlow</h1>
+                <h2>AI-Powered Mental Wellness Platform</h2>
+                <p class="subtitle">Transforming how people understand and improve their emotional health through intelligent journaling and mood analytics.</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: The Problem -->
+        <div class="slide bg-red-pink" data-slide="1">
+            <div class="slide-content">
+                <div class="grid grid-2">
+                    <div>
+                        <div class="icon">❤️</div>
+                        <h1>The Mental Health Crisis</h1>
+                        <h2>A growing global challenge</h2>
+                    </div>
+                    <div class="bullet-list">
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>1 in 4 people worldwide experience mental health issues</p>
+                        </div>
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>Depression and anxiety have increased 25% since COVID-19</p>
+                        </div>
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>Only 30% of people seek professional help due to cost and stigma</p>
+                        </div>
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>Traditional therapy has 3-6 month waiting lists</p>
+                        </div>
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>People lack accessible tools for daily emotional self-awareness</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Our Solution -->
+        <div class="slide bg-green-teal" data-slide="2">
+            <div class="slide-content">
+                <div class="grid grid-2">
+                    <div>
+                        <div class="icon">🧠</div>
+                        <h1>Our Solution</h1>
+                        <h2>AI-powered emotional intelligence</h2>
+                    </div>
+                    <div class="bullet-list">
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>Instant AI analysis of journal entries using advanced NLP</p>
+                        </div>
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>Real-time mood tracking with personalized insights</p>
+                        </div>
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>Beautiful visualizations to identify emotional patterns</p>
+                        </div>
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>Accessible 24/7 from any device</p>
+                        </div>
+                        <div class="bullet-item">
+                            <div class="bullet-point"></div>
+                            <p>Privacy-first approach with secure data handling</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: How It Works -->
+        <div class="slide bg-blue-indigo" data-slide="3">
+            <div class="slide-content">
+                <h1>How MindFlow Works</h1>
+                <h2>Simple, powerful, intelligent</h2>
+                <div class="grid grid-4">
+                    <div class="card">
+                        <div class="icon">⚡</div>
+                        <h3>Smart Journaling</h3>
+                        <p>Write freely while AI analyzes sentiment, emotion, and mood patterns in real-time</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon">📊</div>
+                        <h3>Mood Analytics</h3>
+                        <p>Beautiful charts and insights help you understand your emotional trends over time</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🎯</div>
+                        <h3>Personalized Insights</h3>
+                        <p>AI provides tailored recommendations for improving your mental wellness</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🛡️</div>
+                        <h3>Privacy First</h3>
+                        <p>Your data is encrypted and never shared. Complete control over your personal information</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Live Demo -->
+        <div class="slide bg-purple-indigo" data-slide="4">
+            <div class="slide-content">
+                <h1>Live Demo</h1>
+                <h2>See MindFlow in action</h2>
+                <div class="demo-url">xutmvobehyo2w.mocha.app</div>
+                <div class="demo-steps">
+                    <div class="demo-step">
+                        <div class="step-number">1</div>
+                        <p>Sign up with Google in seconds</p>
+                    </div>
+                    <div class="demo-step">
+                        <div class="step-number">2</div>
+                        <p>Write your first journal entry</p>
+                    </div>
+                    <div class="demo-step">
+                        <div class="step-number">3</div>
+                        <p>Watch AI analyze your mood instantly</p>
+                    </div>
+                    <div class="demo-step">
+                        <div class="step-number">4</div>
+                        <p>Explore beautiful mood visualizations</p>
+                    </div>
+                    <div class="demo-step">
+                        <div class="step-number">5</div>
+                        <p>Track your emotional journey over time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Market Opportunity -->
+        <div class="slide bg-emerald-green" data-slide="5">
+            <div class="slide-content">
+                <div class="icon">📈</div>
+                <h1>Market Opportunity</h1>
+                <h2>A $5.6B growing market</h2>
+                <div class="grid grid-4">
+                    <div class="stat-box">
+                        <div class="stat-value">$5.6B</div>
+                        <div class="stat-label">Mental Health App Market</div>
+                        <div class="stat-growth">+23% CAGR</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">75M</div>
+                        <div class="stat-label">Target Users (US)</div>
+                        <div class="stat-growth">Adults seeking wellness tools</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">$60/year</div>
+                        <div class="stat-label">Average Revenue per User</div>
+                        <div class="stat-growth">Industry standard</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">&lt;5%</div>
+                        <div class="stat-label">Market Penetration</div>
+                        <div class="stat-growth">Huge untapped potential</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Business Model -->
+        <div class="slide bg-orange-red" data-slide="6">
+            <div class="slide-content">
+                <h1>Business Model</h1>
+                <h2>Freemium with premium features</h2>
+                <div class="grid grid-3">
+                    <div class="pricing-tier">
+                        <h3>Free</h3>
+                        <div class="price">$0</div>
+                        <ul class="feature-list">
+                            <li>5 entries/month</li>
+                            <li>Basic mood tracking</li>
+                            <li>7-day history</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-tier popular">
+                        <div class="popular-badge">POPULAR</div>
+                        <h3>Premium</h3>
+                        <div class="price">$4.99/mo</div>
+                        <ul class="feature-list">
+                            <li>Unlimited entries</li>
+                            <li>Advanced AI insights</li>
+                            <li>Full analytics</li>
+                            <li>Data export</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-tier">
+                        <h3>Enterprise</h3>
+                        <div class="price">$50/employee</div>
+                        <ul class="feature-list">
+                            <li>Team analytics</li>
+                            <li>Corporate wellness</li>
+                            <li>Custom integrations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Growth Strategy -->
+        <div class="slide bg-violet-purple" data-slide="7">
+            <div class="slide-content">
+                <h1>Growth Strategy</h1>
+                <h2>Path to 100K users</h2>
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <div class="milestone">
+                        <div class="milestone-number">1</div>
+                        <div class="milestone-content">
+                            <div class="milestone-phase">Phase 1: Launch & Validation <span class="milestone-target">1K users</span></div>
+                            <div>Month 1-3</div>
+                        </div>
+                    </div>
+                    <div class="milestone">
+                        <div class="milestone-number">2</div>
+                        <div class="milestone-content">
+                            <div class="milestone-phase">Phase 2: Premium Features <span class="milestone-target">10K users</span></div>
+                            <div>Month 4-8</div>
+                        </div>
+                    </div>
+                    <div class="milestone">
+                        <div class="milestone-number">3</div>
+                        <div class="milestone-content">
+                            <div class="milestone-phase">Phase 3: Enterprise Sales <span class="milestone-target">50K users</span></div>
+                            <div>Month 9-18</div>
+                        </div>
+                    </div>
+                    <div class="milestone">
+                        <div class="milestone-number">4</div>
+                        <div class="milestone-content">
+                            <div class="milestone-phase">Phase 4: Scale & Exit <span class="milestone-target">100K+ users</span></div>
+                            <div>Month 19-36</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Next Steps -->
+        <div class="slide bg-indigo-purple" data-slide="8">
+            <div class="slide-content">
+                <h1>Next Steps</h1>
+                <h2>Ready to transform mental wellness</h2>
+                <div class="grid grid-4">
+                    <div class="card">
+                        <div class="step-number">1</div>
+                        <p>Try the live demo at xutmvobehyo2w.mocha.app</p>
+                    </div>
+                    <div class="card">
+                        <div class="step-number">2</div>
+                        <p>Join our beta program for early access to premium features</p>
+                    </div>
+                    <div class="card">
+                        <div class="step-number">3</div>
+                        <p>Partner with us to bring MindFlow to your organization</p>
+                    </div>
+                    <div class="card">
+                        <div class="step-number">4</div>
+                        <p>Invest in the future of mental health technology</p>
+                    </div>
+                </div>
+                <div class="contact-box">
+                    <h3>Get Started Today</h3>
+                    <p>Demo: xutmvobehyo2w.mocha.app</p>
+                    <p>Contact: hello@mindflow.app</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn">‹</button>
+        <div class="slide-indicators" id="indicators"></div>
+        <button class="nav-button" id="nextBtn">›</button>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">9</span>
+    </div>
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint">Use ← → arrow keys to navigate</div>
+
+    <script>
+        class PitchDeck {
+            constructor() {
+                this.currentSlide = 0;
+                this.totalSlides = 9;
+                this.slides = document.querySelectorAll('.slide');
+                this.prevBtn = document.getElementById('prevBtn');
+                this.nextBtn = document.getElementById('nextBtn');
+                this.indicators = document.getElementById('indicators');
+                this.currentSlideSpan = document.getElementById('currentSlide');
+
+                this.init();
+            }
+
+            init() {
+                this.createIndicators();
+                this.bindEvents();
+                this.updateNavigation();
+            }
+
+            createIndicators() {
+                for (let i = 0; i < this.totalSlides; i++) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'indicator';
+                    if (i === 0) indicator.classList.add('active');
+                    indicator.addEventListener('click', () => this.goToSlide(i));
+                    this.indicators.appendChild(indicator);
+                }
+            }
+
+            bindEvents() {
+                this.prevBtn.addEventListener('click', () => this.previousSlide());
+                this.nextBtn.addEventListener('click', () => this.nextSlide());
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight' && this.currentSlide < this.totalSlides - 1) {
+                        this.nextSlide();
+                    } else if (e.key === 'ArrowLeft' && this.currentSlide > 0) {
+                        this.previousSlide();
+                    }
+                });
+            }
+
+            goToSlide(index) {
+                if (index === this.currentSlide) return;
+
+                this.slides[this.currentSlide].classList.remove('active');
+                this.slides[index].classList.remove('prev');
+                this.slides[index].classList.add('active');
+
+                if (index < this.currentSlide) {
+                    this.slides[this.currentSlide].classList.add('prev');
+                }
+
+                this.currentSlide = index;
+                this.updateNavigation();
+            }
+
+            nextSlide() {
+                if (this.currentSlide < this.totalSlides - 1) {
+                    this.goToSlide(this.currentSlide + 1);
+                }
+            }
+
+            previousSlide() {
+                if (this.currentSlide > 0) {
+                    this.goToSlide(this.currentSlide - 1);
+                }
+            }
+
+            updateNavigation() {
+                // Update buttons
+                this.prevBtn.disabled = this.currentSlide === 0;
+                this.nextBtn.disabled = this.currentSlide === this.totalSlides - 1;
+
+                // Update indicators
+                document.querySelectorAll('.indicator').forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === this.currentSlide);
+                });
+
+                // Update counter
+                this.currentSlideSpan.textContent = this.currentSlide + 1;
+            }
+        }
+
+        // Initialize the pitch deck
+        new PitchDeck();
+    </script>
+</body>
+</html>
